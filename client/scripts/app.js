@@ -6,6 +6,14 @@ var Movie = Backbone.Model.extend({
 
   toggleLike: function() {
     // your code here
+    // use get method to find current status of like 
+    var likeStatus = this.get('like');
+    // use set to change status of like 
+    if (likeStatus) {
+      this.set('like', false);
+    } else {
+      this.set('like', true);
+    }
   }
 
 });
@@ -16,12 +24,14 @@ var Movies = Backbone.Collection.extend({
 
   initialize: function() {
     // your code here
+    this.on('change:like', this.sort, this);
   },
 
   comparator: 'title',
 
   sortByField: function(field) {
-    // your code here
+    this.comparator = field || this.comparator;
+    this.sort();
   }
 
 });
@@ -58,7 +68,7 @@ var MovieView = Backbone.View.extend({
                         </div>'),
 
   initialize: function() {
-    // your code here
+    this.model.on('change:like', this.render, this);
   },
 
   events: {
@@ -66,7 +76,7 @@ var MovieView = Backbone.View.extend({
   },
 
   handleClick: function() {
-    // your code here
+    this.model.toggleLike();
   },
 
   render: function() {
@@ -79,7 +89,7 @@ var MovieView = Backbone.View.extend({
 var MoviesView = Backbone.View.extend({
 
   initialize: function() {
-    // your code here
+    this.collection.on('sort', this.render, this);
   },
 
   render: function() {
